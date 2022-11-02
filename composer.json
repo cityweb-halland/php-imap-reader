@@ -16,7 +16,7 @@
     "require": {
         "php": ">=5.3",
         "ext-imap": "*",
-        "ext-iconv": "*",
+        "ext-iconv": "*"
     },
     "autoload": {
         "psr-4": {
