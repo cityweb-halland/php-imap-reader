@@ -11,7 +11,7 @@ use stdClass;
  * @category  Protocols
  * @package   Protocols
  * @author    Benjamin Hall <ben@conobe.co.uk>
- * @copyright 2019 Copyright (c) Benjamin Hall
+ * @copyright 2022 Copyright (c) Benjamin Hall
  * @license   MIT https://github.com/benhall14/php-imap-reader
  * @link      https://conobe.co.uk/projects/php-imap-reader/
  */
@@ -69,7 +69,7 @@ class Email
     /**
      * The sender of this email.
      * 
-     * @var string
+     * @var \stdClass
      */
     public $from;
 
@@ -205,9 +205,9 @@ class Email
     /**
      * Get the recipient of this email.
      * 
-     * @return string
+     * @return array
      */
-    public function to()
+    public function to(): array
     {
         return $this->to;
     }
@@ -281,7 +281,7 @@ class Email
      */
     public function fromName()
     {
-        return $this->from && $this->from->name ? $this->from->name : null;
+        return $this->from->name ?? null;
     }
 
     /**
@@ -291,7 +291,7 @@ class Email
      */
     public function fromEmail()
     {
-        return $this->from && $this->from->email ? $this->from->email : null;
+        return $this->from->email ?? null;
     }
 
     /**
@@ -319,9 +319,9 @@ class Email
      * 
      * @return boolean
      */
-    public function hasAttachments()
+    public function hasAttachments(): bool
     {
-        return (count($this->attachments)) ? true : false;
+        return (bool)count($this->attachments);
     }
 
     /**
@@ -329,7 +329,7 @@ class Email
      * 
      * @return array
      */
-    public function attachments()
+    public function attachments(): array
     {
         return $this->attachments;
     }
@@ -339,11 +339,11 @@ class Email
      * 
      * @param integer $attachment_id The attachment to return.
      * 
-     * @return EmailAttachment
+     * @return EmailAttachment|false
      */
-    public function attachment($attachment_id)
+    public function attachment($attachment_id): EmailAttachment|false
     {
-        return isset($this->attachments[$attachment_id]) ? $this->attachments[$attachment_id] : false;
+        return $this->attachments[$attachment_id] ?? false;
     }
 
     /**
@@ -595,9 +595,9 @@ class Email
      * @param string $host    The host name.
      * @param string $name    (optional) The recipient name.
      * 
-     * @return Email
+     * @return Email|false
      */
-    public function addTo($mailbox, $host, $name = false)
+    public function addTo($mailbox, $host, $name = false): Email|false
     {
         if (!$mailbox || !$host) {
             return false;
@@ -625,9 +625,9 @@ class Email
      * @param string $host    The host name.
      * @param string $name    (optional) The reply to name.
      * 
-     * @return Email
+     * @return Email|false
      */
-    public function addReplyTo($mailbox, $host, $name = false)
+    public function addReplyTo($mailbox, $host, $name = false): Email|false
     {
         if (!$mailbox || !$host) {
             return false;
@@ -653,9 +653,9 @@ class Email
      * 
      * @param string $custom_header The custom header to append to the array.
      * 
-     * @return Email
+     * @return Email|false
      */
-    public function addCustomHeader($custom_header)
+    public function addCustomHeader($custom_header): Email|false
     {
         if (!$custom_header) {
             return false;
@@ -729,9 +729,9 @@ class Email
      * @param string $host    The host name.
      * @param string $name    (optional) The name of the CC.
      * 
-     * @return Email
+     * @return Email|false
      */
-    public function addCC($mailbox, $host, $name = false)
+    public function addCC($mailbox, $host, $name = false): Email|false
     {
         if (!$mailbox || !$host) {
             return false;

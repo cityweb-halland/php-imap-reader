@@ -13,7 +13,7 @@ use IMAP\Connection;
  * @category  Protocols
  * @package   Protocols
  * @author    Benjamin Hall <ben@conobe.co.uk>
- * @copyright 2019 Copyright (c) Benjamin Hall
+ * @copyright 2022 Copyright (c) Benjamin Hall
  * @license   MIT https://github.com/benhall14/php-imap-reader
  * @link      https://conobe.co.uk/projects/php-imap-reader/
  */
@@ -176,7 +176,7 @@ class Reader {
 	 * @return Connection
 	 */
 	public function stream(bool $reconnect = false): Connection {
-		if($this->imap && (!$this->isImapResource($this->imap) || !imap_ping($this->imap))) {
+		if ($this->imap && (!$this->isImapResource($this->imap) || !imap_ping($this->imap))) {
 			$this->close();
 
 			$this->imap = null;
@@ -266,6 +266,105 @@ class Reader {
 		return imap_last_error();
 	}
 
+    /**
+     * Alias for doesMailboxExist - Returns true/false based on if the specified folder/mailbox exists on the IMAP stream.
+     *
+     * @param string $folder_name
+     *
+     * @return bool
+     */
+    public function doesFolderExist($folder_name = null): bool
+    {
+        return $this->doesMailboxExist($folder_name);
+    }
+
+    /**
+     * Returns true/false based on if the specified folder/mailbox exists on the IMAP stream.
+     *
+     * @param string $mailbox
+     *
+     * @return bool
+     */
+    public function doesMailboxExist($mailbox): bool
+    {
+        if (!$mailbox) {
+            return false;
+        }
+
+        $mailboxes = imap_list($this->stream(), $this->hostname, "*");
+
+        if (!in_array($this->hostname . $mailbox, $mailboxes)) {
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * Create a new folder/mailbox on the IMAP stream.
+     *
+     * @param string $folder_name
+     *
+     * @return bool
+     */
+    public function makeFolder($folder_name = null): bool
+    {
+        if (!$folder_name) {
+            return false;
+        }
+
+        if ($this->doesFolderExist($folder_name)) {
+            return false;
+        }
+
+        return imap_createmailbox($this->stream(), imap_utf7_encode($this->hostname . $folder_name));
+    }
+
+    /**
+     * Alias for makeFolder. Creates a new folder/mailbox on the IMAP stream.
+     *
+     * @param string $folder_name
+     *
+     * @return bool
+     */
+    public function createFolder($folder_name): bool
+    {
+        return $this->makeFolder($folder_name);
+    }
+
+    /**
+     * Alias for makeFolder. Create a new folder/mailbox on the IMAP stream.
+     *
+     * @param string $mailbox
+     *
+     * @return boolean
+     */
+    public function createMailbox($mailbox = null): bool
+    {
+        return $this->makeFolder($mailbox);
+    }
+
+    /**
+     * Alias for makeFolder. Create a new folder/mailbox on the IMAP stream.
+     *
+     * @param string $mailbox
+     *
+     * @return boolean
+     */
+    public function makeMailbox($mailbox = null): bool
+    {
+        return $this->makeFolder($mailbox);
+    }
+
+    /**
+     * Expunge all emails that are marked for deletion on the connected inbox.
+     *
+     * @return boolean
+     */
+    public function expunge(): bool
+    {
+        return imap_expunge($this->stream());
+    }
 	/**
 	 * Delete an email by given email id.
 	 *
@@ -300,8 +399,8 @@ class Reader {
 			return false;
 		}
 
-		return imap_mail_move($this->stream(), (string)$email_id, $folder, CP_UID);
-	}
+        return imap_mail_move($this->stream(), (string) $email_id, $folder, CP_UID);
+    }
 
 	/**
 	 * Get the list of emails from the last get call.
@@ -897,9 +996,9 @@ class Reader {
 			}
 		}
 
-		$email->setRawBody(imap_fetchbody($this->stream(), $uid, '', $options));
-
-		$body = imap_fetchstructure($this->stream(), $uid, FT_UID);
+        $email->setRawBody(imap_fetchbody($this->stream(), $uid, '', $options));
+        
+        $body = imap_fetchstructure($this->stream(), $uid, FT_UID);
 
 		if(isset($body->parts) && count($body->parts)) {
 			foreach($body->parts as $part_number => $part) {

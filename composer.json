@@ -8,13 +8,13 @@
     "authors": [
         {
             "name": "Benjamin Hall",
-            "email": "benhall14@hotmail.com",
+            "email": "ben@conobe.co.uk",
             "homepage": "https://conobe.co.uk",
             "role": "Developer"
         }
     ],
     "require": {
-        "php": ">=5.3",
+        "php": ">=8.1",
         "ext-imap": "*",
         "ext-iconv": "*"
     },
